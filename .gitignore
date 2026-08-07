@@ -7,3 +7,4 @@ caster.env
 generated/
 venv/
 .venv/
+cover-cache/

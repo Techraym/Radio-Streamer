@@ -8,14 +8,53 @@
   "music": {
     "artist_repeat_hours": 8,
     "track_repeat_hours": 72,
-    "excluded_genres": ["classical", "klassiek", "religious", "christian", "gospel", "children", "kids", "kinderen"],
+    "excluded_genres": [
+      "classical",
+      "klassiek",
+      "religious",
+      "christian",
+      "gospel",
+      "children",
+      "kids",
+      "kinderen"
+    ],
     "dayparts": [
-      {"name":"night","start":"00:00","end":"07:00","genres":["ambient","soft rock","soul","chill","acoustic"]},
-      {"name":"morning","start":"07:00","end":"10:00","genres":["pop","rock","dance","80s","90s"]},
-      {"name":"day","start":"10:00","end":"16:00","genres":["pop","rock","80s","90s","2000s"]},
-      {"name":"drive","start":"16:00","end":"19:00","genres":["rock","pop","dance","funk","disco"]},
-      {"name":"evening","start":"19:00","end":"22:00","genres":["pop","soul","rock","indie","acoustic"]},
-      {"name":"late","start":"22:00","end":"00:00","genres":["soul","soft rock","indie","chill","acoustic"]}
+      {
+        "name": "night",
+        "start": "00:00",
+        "end": "07:00",
+        "genres": ["ambient", "soft rock", "soul", "chill", "acoustic"]
+      },
+      {
+        "name": "morning",
+        "start": "07:00",
+        "end": "10:00",
+        "genres": ["pop", "rock", "dance", "80s", "90s"]
+      },
+      {
+        "name": "day",
+        "start": "10:00",
+        "end": "16:00",
+        "genres": ["pop", "rock", "80s", "90s", "2000s"]
+      },
+      {
+        "name": "drive",
+        "start": "16:00",
+        "end": "19:00",
+        "genres": ["rock", "pop", "dance", "funk", "disco"]
+      },
+      {
+        "name": "evening",
+        "start": "19:00",
+        "end": "22:00",
+        "genres": ["pop", "soul", "rock", "indie", "acoustic"]
+      },
+      {
+        "name": "late",
+        "start": "22:00",
+        "end": "00:00",
+        "genres": ["soul", "soft rock", "indie", "chill", "acoustic"]
+      }
     ]
   },
   "ai": {
@@ -31,5 +70,20 @@
     "timeout_seconds": 18
   },
   "scanner": {"interval_minutes": 10},
-  "storage": {"require_read_only": true, "mountpoint": "/mnt/music"}
+  "storage": {"require_read_only": true, "mountpoint": "/mnt/music"},
+  "api": {
+    "enabled": true,
+    "bind": "0.0.0.0",
+    "port": 8042,
+    "allowed_origins": ["https://raysnijder.nl", "https://www.raysnijder.nl"],
+    "history_limit": 20,
+    "cover_cache_dir": "/var/lib/nrg-radio/cover-cache"
+  },
+  "stream": {
+    "public_url": "",
+    "caster_host": "morcast.caster.fm",
+    "caster_port": 17615,
+    "caster_mount": "/aQIBb",
+    "bitrate_kbps": 96
+  }
 }

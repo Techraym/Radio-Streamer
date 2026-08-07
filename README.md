@@ -1,30 +1,46 @@
-# NRG Radio 1.1
+# NRG Radio 1.2.0
 
-NRG Radio is een headless AI-radiostreamer voor Debian onder Proxmox.
+Headless AI-radiostreamer voor Debian onder Proxmox.
 
 ## Architectuur
 
-- **Debian VM 1 – Top40Archiver:** read/write toegang tot de gedeelde USB-muziekschijf.
-- **Debian VM 2 – NRG Radio:** uitsluitend read-only toegang tot dezelfde muziek.
-- De muziekbibliotheek staat op `/mnt/music`.
-- NRG Radio schrijft database, geschiedenis, cache en TTS alleen naar de lokale VM-schijf.
-- Liquidsoap stuurt de stream naar Caster.fm als 96 kbps MP3.
+- Debian VM 1: Top40Archiver met read/write toegang tot de gedeelde USB-muziekschijf.
+- Debian VM 2: NRG Radio met uitsluitend read-only toegang tot dezelfde muziek.
+- Muziekbron op de streamer: `/mnt/music`.
+- Database, geschiedenis, AI/TTS-audio en cover-cache staan lokaal op de streamer-VM.
+- Liquidsoap stuurt 96 kbps MP3 naar Caster.fm.
 
 ## Functies
 
-- lokale muziek scannen en indexeren;
-- SQLite muziekbibliotheek en speelgeschiedenis;
-- metadata uit MP3/FLAC/M4A/Ogg/Opus;
+- lokale muziekbibliotheek scannen en indexeren;
+- SQLite catalogus en speelgeschiedenis;
 - artiest-repeat standaard 8 uur;
 - track-repeat standaard 72 uur;
 - dagdeelafhankelijke muziekselectie;
 - uitgesloten genres;
 - lokale AI-presentator via Ollama;
-- Nederlandse spraak via Edge TTS;
-- automatische fallback wanneer Ollama tijdelijk niet beschikbaar is;
-- systemd-service en automatische herstart;
+- Nederlandse Edge TTS;
+- fallback-presentatie als Ollama niet beschikbaar is;
 - automatische bibliotheekscan iedere 10 minuten;
-- harde controle dat `/mnt/music` read-only is.
+- website/API-service op poort 8042;
+- now-playing en historie via JSON;
+- albumhoes uit de embedded ID3/APIC-tag van de MP3;
+- lokale cover-cache zonder wijzigingen aan `/mnt/music`;
+- CORS voor `raysnijder.nl`;
+- healthcheck en smoke-test;
+- systemd-services met automatische herstart.
+
+## Albumhoezen
+
+NRG Radio leest de albumhoes rechtstreeks uit het `APIC`-frame van de ID3-tag van de MP3. Als meerdere afbeeldingen aanwezig zijn, krijgt `Front Cover` (picture type 3) voorrang.
+
+NRG Radio schrijft nooit tags of covers terug naar de muziekbron. Alleen een cachekopie wordt lokaal opgeslagen in:
+
+```text
+/var/lib/nrg-radio/cover-cache
+```
+
+Als een MP3 geen embedded albumhoes heeft, retourneert de API een NRG Radio fallback-afbeelding.
 
 ## Caster.fm
 
@@ -38,47 +54,46 @@ Mountpoint: /aQIBb
 Bitrate:    96 kbps MP3
 ```
 
-Het broadcast-wachtwoord staat **niet** in GitHub en wordt tijdens installatie lokaal gevraagd.
+Het broadcast-wachtwoord staat niet in GitHub en wordt tijdens installatie lokaal gevraagd.
 
-## Installeren
+## Installatie
 
-Zorg eerst dat de gedeelde muziekopslag op de streamer beschikbaar is als read-only mount:
+De muziekopslag moet **voor de installatie** al actief en read-only gemount zijn op `/mnt/music`. Voorbeeld:
 
 ```text
 192.168.1.103:/srv/music /mnt/music nfs ro,_netdev,nofail,x-systemd.automount 0 0
 ```
 
-Daarna kan de complete installer vanaf GitHub worden gestart met:
+Installeer daarna rechtstreeks vanaf GitHub:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Techraym/Radio-Streamer/main/bootstrap.sh | sudo bash
 ```
 
-De bootstrap:
-1. downloadt de benodigde Debian-pakketten;
-2. installeert indien nodig Ollama;
-3. controleert Debian, internet, opslag en RAM;
-4. controleert dat `/mnt/music` werkelijk read-only is;
-5. stopt als de streamer naar de muziekbron kan schrijven;
-6. installeert NRG Radio;
-7. controleert Python en Liquidsoap.
+De bootstrap downloadt vereiste Debian-pakketten, installeert Ollama en `llama3.2:1b` indien nodig, controleert de read-only opslag en installeert de applicatie.
 
-Ollama niet automatisch installeren:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Techraym/Radio-Streamer/main/bootstrap.sh | sudo NRG_INSTALL_OLLAMA=0 bash
-```
-
-## Beheer
+## Services
 
 ```bash
 systemctl status nrg-radio --no-pager -l
-journalctl -u nrg-radio -f
-systemctl status nrg-radio-scan.timer
+systemctl status nrg-radio-api --no-pager -l
+systemctl status nrg-radio-scan.timer --no-pager -l
 ```
 
-Handmatig scannen:
+## Controle
 
 ```bash
-sudo systemctl start nrg-radio-scan.service
+sudo /opt/nrg-radio/scripts/healthcheck.sh
+sudo /opt/nrg-radio/scripts/smoke-test.sh
 ```
+
+## API
+
+```bash
+curl http://127.0.0.1:8042/health
+curl http://127.0.0.1:8042/api/status
+curl http://127.0.0.1:8042/api/now-playing
+curl http://127.0.0.1:8042/api/history
+```
+
+Zie ook `docs/WEBSITE_API.md`.
