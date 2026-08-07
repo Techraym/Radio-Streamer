@@ -1,0 +1,25 @@
+[Unit]
+Description=NRG Radio 1.1 - AI Radio
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/mnt/music
+
+[Service]
+Type=simple
+User=nrg-radio
+Group=nrg-radio
+Environment=NRG_CONFIG=/etc/nrg-radio/config.json
+ExecStartPre=/opt/nrg-radio/scripts/check-music-readonly.sh /mnt/music
+ExecStart=/usr/bin/liquidsoap /etc/nrg-radio/nrg-radio.liq
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/mnt/music
+ReadWritePaths=/var/lib/nrg-radio
+ReadWritePaths=/tmp
+
+[Install]
+WantedBy=multi-user.target

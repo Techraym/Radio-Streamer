@@ -1,0 +1,35 @@
+{
+  "station": {
+    "name": "NRG Radio",
+    "music_dir": "/mnt/music",
+    "generated_dir": "/var/lib/nrg-radio/generated",
+    "database": "/var/lib/nrg-radio/nrg-radio.db"
+  },
+  "music": {
+    "artist_repeat_hours": 8,
+    "track_repeat_hours": 72,
+    "excluded_genres": ["classical", "klassiek", "religious", "christian", "gospel", "children", "kids", "kinderen"],
+    "dayparts": [
+      {"name":"night","start":"00:00","end":"07:00","genres":["ambient","soft rock","soul","chill","acoustic"]},
+      {"name":"morning","start":"07:00","end":"10:00","genres":["pop","rock","dance","80s","90s"]},
+      {"name":"day","start":"10:00","end":"16:00","genres":["pop","rock","80s","90s","2000s"]},
+      {"name":"drive","start":"16:00","end":"19:00","genres":["rock","pop","dance","funk","disco"]},
+      {"name":"evening","start":"19:00","end":"22:00","genres":["pop","soul","rock","indie","acoustic"]},
+      {"name":"late","start":"22:00","end":"00:00","genres":["soul","soft rock","indie","chill","acoustic"]}
+    ]
+  },
+  "ai": {
+    "enabled": true,
+    "announcement_probability": 0.35,
+    "ollama_url": "http://127.0.0.1:11434",
+    "model": "llama3.2:1b",
+    "voice": "nl-NL-MaartenNeural",
+    "rate": "+0%",
+    "pitch": "+0Hz",
+    "volume": "+0%",
+    "max_words": 42,
+    "timeout_seconds": 18
+  },
+  "scanner": {"interval_minutes": 10},
+  "storage": {"require_read_only": true, "mountpoint": "/mnt/music"}
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=NRG Radio - scan read-only music library
+RequiresMountsFor=/mnt/music
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=nrg-radio
+Group=nrg-radio
+Environment=NRG_CONFIG=/etc/nrg-radio/config.json
+ExecStartPre=/opt/nrg-radio/scripts/check-music-readonly.sh /mnt/music
+ExecStart=/opt/nrg-radio/venv/bin/python /opt/nrg-radio/app/scan_music.py
